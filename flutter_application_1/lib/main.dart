@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Student.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,6 +60,12 @@ class _MyHomePageState extends State<MyHomePage> {
   String name = 'Diego';
   int edad = 21;
   bool variable = true;
+
+  final List<String> students = ["Alumno1", "Alumno2", "Alumno3"];
+  final Student student = Student("Estudiante 1", "Matricula1");
+
+  TextEditingController _txtName = TextEditingController();
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -76,6 +83,32 @@ class _MyHomePageState extends State<MyHomePage> {
         _counter--;
       });
     }
+  }
+
+  Widget _getAllStudents(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 17,),
+        Text("Student list:"),
+        SizedBox(height: 12,),
+        ...students.map((n)=>Text("- $n")).toList()
+      ],
+    );
+  }
+
+  void _addStudendt(){
+    final name = _txtName.text.trim();
+    if(name.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please writte something"))
+      );
+      return;
+    }
+    setState(() {
+      students.add(name);
+    });
+    _txtName.clear();
   }
 
   @override
@@ -120,10 +153,26 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 12),
+            child: TextField(
+              controller: _txtName,
+              decoration: InputDecoration(
+                labelText: "Name: ",
+                border: OutlineInputBorder()
+              ),
+              ),
+            ),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 12),
+            child: ElevatedButton(onPressed: _addStudendt, child: Text("Add Student")),
+            ),
             SizedBox(height: 15),
             Text('Nombre: $name'),
             Text('Edad: $edad'),
             Text('booleano: $variable'),
+            SizedBox(height: 15,),
+            Text("Student1: ${student.name}"),
+            Text("Student1: ${student.studentId}"),
+            _getAllStudents()
           ],
         ),
       ),
