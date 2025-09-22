@@ -1,5 +1,6 @@
 class Person {
   String name;
-  
-  Person(this.name);
+  String studentId;
+
+  Person(this.name, this.studentId);
 }

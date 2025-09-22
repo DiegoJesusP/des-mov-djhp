@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Student.dart';
 
@@ -9,45 +8,20 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Aplicacion Flutter de DiegoJ'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -61,91 +35,98 @@ class _MyHomePageState extends State<MyHomePage> {
   int edad = 21;
   bool variable = true;
 
-  final List<String> students = ["Alumno1", "Alumno2", "Alumno3"];
+  final TextEditingController _txtNameCTRL = TextEditingController();
+  final TextEditingController _txtStudentIdCTRL = TextEditingController();
+
   final Student student = Student("Estudiante 1", "Matricula1");
 
-  TextEditingController _txtName = TextEditingController();
+  // Lista de estudiantes
+  List<Student> studentList = [];
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
   void _decrementCounter() {
-    if (_counter > 0) {
+    if (_counter <= 0) {
+      _showMyDialog();
+    } else {
       setState(() {
         _counter--;
       });
     }
   }
 
-  Widget _getAllStudents(){
+  Widget _getAllStudents() {
+    if (studentList.isEmpty) {
+      return const Text("No hay estudiantes agregados");
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 17,),
-        Text("Student list:"),
-        SizedBox(height: 12,),
-        ...students.map((n)=>Text("- $n")).toList()
+        const SizedBox(height: 12),
+        const Text("Student´s list:"),
+        const SizedBox(height: 12),
+        ...studentList.map((s) => Text("- ${s.name} (${s.studentId})")).toList(),
       ],
     );
   }
 
-  void _addStudendt(){
-    final name = _txtName.text.trim();
-    if(name.isEmpty){
+  void _addStudent() {
+    final name = _txtNameCTRL.text.trim();
+    final studentId = _txtStudentIdCTRL.text.trim();
+
+    if (name.isEmpty || studentId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please writte something"))
+        const SnackBar(content: Text("El nombre y el ID no pueden estar vacíos")),
       );
       return;
     }
     setState(() {
-      students.add(name);
+      studentList.add(Student(name, studentId));
     });
-    _txtName.clear();
+    _txtNameCTRL.clear();
+    _txtStudentIdCTRL.clear();
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Alerta'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('No puedes tener nuemros negativos'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text('Agregar o quitar numero:'),
@@ -153,41 +134,57 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            Padding(padding: EdgeInsets.symmetric(horizontal: 12),
-            child: TextField(
-              controller: _txtName,
-              decoration: InputDecoration(
-                labelText: "Name: ",
-                border: OutlineInputBorder()
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: TextField(
+                controller: _txtNameCTRL,
+                decoration: const InputDecoration(
+                  labelText: "Name: ",
+                  border: OutlineInputBorder(),
+                ),
               ),
             ),
-            Padding(padding: EdgeInsets.symmetric(horizontal: 12),
-            child: ElevatedButton(onPressed: _addStudendt, child: Text("Add Student")),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: TextField(
+                controller: _txtStudentIdCTRL,
+                decoration: const InputDecoration(
+                  labelText: "Student Id: ",
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ),
-            SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ElevatedButton(
+                onPressed: _addStudent,
+                child: const Text("Add Student"),
+              ),
+            ),
+            const SizedBox(height: 15),
             Text('Nombre: $name'),
             Text('Edad: $edad'),
-            Text('booleano: $variable'),
-            SizedBox(height: 15,),
+            Text('Booleano: $variable'),
+            const SizedBox(height: 15),
             Text("Student1: ${student.name}"),
             Text("Student1: ${student.studentId}"),
-            _getAllStudents()
+            _getAllStudents(),
           ],
         ),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           FloatingActionButton(
             onPressed: _incrementCounter,
             tooltip: 'Increment',
             child: const Icon(Icons.add),
           ),
+          const SizedBox(width: 12),
           FloatingActionButton(
             onPressed: _decrementCounter,
-            tooltip: 'Increment',
+            tooltip: 'Decrement',
             child: const Icon(Icons.remove),
           ),
         ],
